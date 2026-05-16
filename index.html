@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="de" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMARTFOX | Eigenverbrauch optimieren</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Colors */
+            --color-bg: #F4F5F7;
+            --color-surface: #FFFFFF;
+            --color-text: #111827;
+            --color-text-muted: #6B7280;
+            --color-accent: #E30613;
+            --color-accent-light: #FEE2E2;
+            --color-highlight: #E5E7EB;
+            --color-dark: #111827;
+            
+            /* Typography */
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            /* Type Scale */
+            --text-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+            --text-sm: clamp(0.875rem, 1.8vw, 1rem);
+            --text-base: clamp(1rem, 2vw, 1.125rem);
+            --text-lg: clamp(1.125rem, 2.5vw, 1.375rem);
+            --text-xl: clamp(1.375rem, 3vw, 1.75rem);
+            --text-2xl: clamp(1.75rem, 4vw, 2.5rem);
+            --text-3xl: clamp(2.25rem, 5vw, 3.5rem);
+            --text-4xl: clamp(3rem, 7vw, 5rem);
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-24: 6rem;
+            --section-padding: clamp(4rem, 10vw, 8rem);
+            
+            /* Z-Index */
+            --z-base: 0;
+            --z-raised: 10;
+            --z-dropdown: 100;
+            --z-sticky: 200;
+            --z-overlay: 500;
+            --z-modal: 1000;
+            --z-toast: 2000;
+            --z-max: 9000;
+        }
+
+        /* Reset & Base */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: var(--space-4);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        /* Icons */
+        [data-lucide] {
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: var(--color-accent);
+            color: white;
+            padding: var(--space-4);
+            z-index: var(--z-max);
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45em;
+            padding: 0.875rem 1.75rem;
+            font-weight: 500;
+            font-size: var(--text-sm);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: var(--z-raised);
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c20410;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--color-highlight);
+            background-color: transparent;
+            color: var(--color-text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-text);
+            background-color: var(--color-surface);
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* ------------------------------------------------------------------
+           HEADER & NAVIGATION
+           ------------------------------------------------------------------ */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--color-highlight);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: var(--text-xl);
+            letter-spacing: 0.05em;
+            color: var(--color-text);
+            text-transform: uppercase;
+        }
+
+        .desktop-nav {
+            display: none;
+        }
+
+        /* Mobile Nav Toggle */
+        .nav-toggle {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1002;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: var(--color-surface);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-nav-list {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-6);
+        }
+
+        .mobile-nav-link {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            padding: 1rem 0;
+            display: block;
+        }
+
+        @media (min-width: 769px) {
+            .nav-toggle, .mobile-overlay {
+                display: none !important;
+                pointer-events: none;
+            }
+            .desktop-nav {
+                display: flex;
+                align-items: center;
+                gap: var(--space-8);
+            }
+            .desktop-nav-list {
+                display: flex;
+                gap: var(--space-6);
+                align-items: center;
+            }
+            .desktop-nav-link {
+                font-size: var(--text-sm);
+                font-weight: 500;
+                color: var(--color-text);
+            }
+            .desktop-nav-link:hover {
+                color: var(--color-accent);
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           HERO SECTION
+           ------------------------------------------------------------------ */
+        .hero {
+            padding-top: calc(80px + var(--space-4));
+            padding-bottom: var(--space-12);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-8);
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: var(--text-4xl);
+            margin-bottom: var(--space-4);
+        }
+
+        .hero-content p {
+            font-size: var(--text-lg);
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-6);
+            max-width: 500px;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(var(--color-text-muted) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.15;
+        }
+
+        .hero-image-wrapper .hero-abstract {
+            width: 120px;
+            height: 120px;
+            border: 8px solid var(--color-surface);
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-image-wrapper .hero-abstract::before {
+            content: '';
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border-radius: 50%;
+            border: 8px solid var(--color-accent);
+            clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%);
+        }
+
+        @media (min-width: 1024px) {
+            .hero {
+                padding-top: calc(80px + var(--space-12));
+                padding-bottom: var(--space-16);
+            }
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-16);
+            }
+            .hero-content h1 {
+                margin-bottom: var(--space-6);
+            }
+            .hero-content p {
+                font-size: var(--text-xl);
+                margin-bottom: var(--space-8);
+            }
+            .hero-image-wrapper {
+                height: 600px;
+                transform: translateX(5%);
+                width: 105%;
+            }
+            .hero-image-wrapper .hero-abstract {
+                width: 200px;
+                height: 200px;
+                border-width: 12px;
+            }
+            .hero-image-wrapper .hero-abstract::before {
+                top: -12px; left: -12px; right: -12px; bottom: -12px;
+                border-width: 12px;
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           VALUE PROP (98%)
+           ------------------------------------------------------------------ */
+        .value-prop {
+            background-color: var(--color-dark);
+            color: var(--color-surface);
+            padding: var(--section-padding) 0;
+            overflow: hidden;
+        }
+
+        .value-prop-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-8);
+            align-items: center;
+        }
+
+        .value-prop-text h2 {
+            color: var(--color-surface);
+            font-size: var(--text-3xl);
+            margin-bottom: var(--space-6);
+        }
+
+        .value-prop-text p {
+            color: #9CA3AF;
+            font-size: var(--text-lg);
+            margin-bottom: 0;
+        }
+
+        .value-prop-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .massive-number {
+            font-family: var(--font-heading);
+            font-size: clamp(6rem, 15vw, 14rem);
+            font-weight: 700;
+            line-height: 0.8;
+            color: var(--color-accent);
+            letter-spacing: -0.05em;
+        }
+
+        .massive-number .percent {
+            font-size: 0.5em;
+            vertical-align: super;
+        }
+
+        .highlight-red {
+            color: var(--color-accent);
+        }
+
+        @media (min-width: 1024px) {
+            .value-prop-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-16);
+            }
+            .value-prop-visual {
+                justify-content: flex-end;
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           PRODUCTS SECTION
+           ------------------------------------------------------------------ */
+        .products {
+            padding: var(--section-padding) 0;
+            background-color: var(--color-bg);
+        }
+
+        .section-header {
+            margin-bottom: var(--space-16);
+        }
+
+        .section-header h2 {
+            font-size: var(--text-3xl);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-8);
+        }
+
+        .product-card {
+            background: var(--color-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--color-highlight);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .product-image-wrapper {
+            height: 240px;
+            background: linear-gradient(135deg, #F9FAFB 0%, #E5E7EB 100%);
+            border-bottom: 1px solid var(--color-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(var(--color-text-muted) 1px, transparent 1px);
+            background-size: 16px 16px;
+            opacity: 0.05;
+        }
+
+        .product-image-wrapper span {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--color-text-muted);
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .product-content {
+            padding: var(--space-6);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-content h3 {
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-2);
+        }
+
+        .product-content p {
+            color: var(--color-text-muted);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-6);
+            flex-grow: 1;
+        }
+
+        .product-link {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+            margin-top: auto;
+        }
+
+        .product-link:hover {
+            color: var(--color-accent);
+        }
+
+        /* ------------------------------------------------------------------
+           FEATURES (ZIG-ZAG)
+           ------------------------------------------------------------------ */
+        .features {
+            padding: var(--section-padding) 0;
+            background-color: var(--color-surface);
+        }
+
+        .feature-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-24);
+            align-items: center;
+        }
+
+        .feature-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-content h3 {
+            font-size: var(--text-2xl);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .feature-number {
+            font-family: var(--font-heading);
+            color: var(--color-accent);
+            font-size: var(--text-sm);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--color-accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .feature-content p {
+            color: var(--color-text-muted);
+            font-size: var(--text-base);
+        }
+
+        .feature-visual {
+            height: 320px;
+            background-color: var(--color-bg);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Abstract feature graphics */
+        .fg-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid var(--color-highlight);
+            position: relative;
+        }
+        .fg-circle::before {
+            content: '';
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border-radius: 50%;
+            border: 8px solid var(--color-accent);
+            clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%);
+        }
+
+        .fg-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 100px;
+        }
+        .fg-bar {
+            width: 24px;
+            background: var(--color-highlight);
+            border-radius: 2px 2px 0 0;
+        }
+        .fg-bar:nth-child(1) { height: 40%; }
+        .fg-bar:nth-child(2) { height: 60%; }
+        .fg-bar:nth-child(3) { height: 80%; background: var(--color-accent); }
+        .fg-bar:nth-child(4) { height: 100%; }
+
+        @media (min-width: 768px) {
+            .feature-row {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-16);
+            }
+            .feature-row:nth-child(even) .feature-content {
+                order: 2;
+            }
+            .feature-row:nth-child(even) .feature-visual {
+                order: 1;
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           FOOTER
+           ------------------------------------------------------------------ */
+        .site-footer {
+            background-color: #0B0F19;
+            color: #9CA3AF;
+            padding: clamp(4rem, 8vw, 7rem) 0 2rem 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        .footer-brand .logo {
+            color: var(--color-surface);
+            margin-bottom: var(--space-4);
+            display: inline-block;
+        }
+
+        .footer-brand p {
+            font-size: var(--text-sm);
+            max-width: 300px;
+            margin-bottom: var(--space-6);
+        }
+
+        .social-links {
+            display: flex;
+            gap: var(--space-4);
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            color: var(--color-surface);
+            transition: all 0.2s ease;
+        }
+
+        .social-link:hover {
+            background: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .footer-heading {
+            font-family: var(--font-heading);
+            color: var(--color-surface);
+            font-size: var(--text-base);
+            margin-bottom: var(--space-6);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .footer-links a, .footer-links button {
+            color: #9CA3AF;
+            font-size: var(--text-sm);
+            text-align: left;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover, .footer-links button:hover {
+            color: var(--color-surface);
+        }
+
+        .footer-contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-3);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            font-size: var(--text-xs);
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           MODALS & OVERLAYS
+           ------------------------------------------------------------------ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: var(--z-max);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.is-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background-color: var(--color-surface);
+            width: 100%;
+            max-width: 480px;
+            border-radius: 8px;
+            padding: 2.5rem;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .modal-overlay.is-active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--color-text-muted);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--color-text);
+            background-color: var(--color-bg);
+        }
+
+        .modal-title {
+            font-size: var(--text-xl);
+            margin-bottom: var(--space-4);
+            padding-right: var(--space-8);
+        }
+
+        .modal-body {
+            font-size: var(--text-sm);
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-6);
+        }
+
+        .modal-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-top: var(--space-4);
+        }
+        
+        .modal-links a {
+            color: var(--color-accent);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+        }
+
+        /* ------------------------------------------------------------------
+           COOKIE BANNER
+           ------------------------------------------------------------------ */
+        .cookie-banner {
+            position: fixed;
+            bottom: var(--space-4);
+            left: var(--space-4);
+            right: var(--space-4);
+            max-width: 600px;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-highlight);
+            border-radius: 8px;
+            padding: var(--space-6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: var(--z-toast);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cookie-banner.is-visible {
+            transform: translateY(0);
+        }
+
+        .cookie-text {
+            font-size: var(--text-sm);
+            color: var(--color-text-muted);
+            margin: 0;
+        }
+
+        .cookie-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        @media (min-width: 640px) {
+            .cookie-banner {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .cookie-actions {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- DEMO NOTICE BANNER - benedictjaros.com -->
+<style>
+#__demo_spacer{display:block;}
+#__demo_notice,#__demo_notice *{box-sizing:border-box;margin:0;padding:0;}
+#__demo_notice{
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  background:rgba(9,9,11,.97);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-family:system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+#__demo_inner{
+  max-width:1280px;margin:0 auto;
+  padding:0 44px 0 18px;min-height:38px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+#__demo_dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:#f5c842;box-shadow:0 0 7px rgba(245,200,66,.55);}
+#__demo_label{color:#f5c842;font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;flex-shrink:0;}
+#__demo_divider{color:rgba(255,255,255,.15);font-size:12px;flex-shrink:0;}
+#__demo_text{color:rgba(255,255,255,.45);font-size:11.5px;line-height:1.45;flex:1 1 160px;}
+#__demo_links{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+#__demo_links a{
+  color:rgba(255,255,255,.38);font-size:11px;text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  transition:color .15s,border-color .15s;white-space:nowrap;
+}
+#__demo_links a:hover{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.4);}
+#__demo_link_sep{color:rgba(255,255,255,.15);font-size:10px;}
+#__demo_close{
+  position:absolute;right:0;top:0;bottom:0;width:40px;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.28);font-size:16px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .15s;
+}
+#__demo_close:hover{color:rgba(255,255,255,.7);}
+@media(max-width:560px){
+  #__demo_inner{padding:7px 44px 7px 14px;gap:6px;}
+  #__demo_text{font-size:11px;flex:1 1 100%;order:3;}
+  #__demo_dot,#__demo_label{order:1;}
+  #__demo_divider{order:2;}
+  #__demo_links{order:4;}
+}
+</style>
+<div id="__demo_spacer"></div>
+<div id="__demo_notice" role="banner" aria-label="Demo notice">
+  <div id="__demo_inner">
+    <span id="__demo_dot"></span>
+    <span id="__demo_label">Demo</span>
+    <span id="__demo_divider">/</span>
+    <span id="__demo_text">Unofficial remake &mdash; not the real website. All content &amp; trademarks belong to their owners.</span>
+    <div id="__demo_links">
+      <a href="https://benedictjaros.com/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+      <span id="__demo_link_sep">&middot;</span>
+      <a href="https://benedictjaros.com/datenschutz" target="_blank" rel="noopener noreferrer">Datenschutz</a>
+    </div>
+  </div>
+  <button id="__demo_close" aria-label="Close demo notice">&#x2715;</button>
+</div>
+<script>
+(function () {
+  var spacer = document.getElementById('__demo_spacer');
+  var b = document.getElementById('__demo_notice');
+  var x = document.getElementById('__demo_close');
+  if (!b || !spacer) return;
+  function sync() { spacer.style.height = b.offsetHeight + 'px'; }
+  function hide() {
+    b.style.display = 'none'; spacer.style.height = '0';
+    try { sessionStorage.setItem('__demo_closed', '1'); } catch (e) {}
+  }
+  try { if (sessionStorage.getItem('__demo_closed')) { b.style.display = 'none'; spacer.style.height = '0'; return; } } catch (e) {}
+  sync();
+  window.addEventListener('resize', function () { if (b.style.display !== 'none') sync(); });
+  if (x) x.addEventListener('click', hide);
+}());
+</script>
+
+
+    <a href="#main" class="skip-link">Zum Inhalt springen</a>
+
+    <!-- Mobile Overlay Navigation -->
+    <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true">
+        <nav class="mobile-nav-list">
+            <a href="#produkte" class="mobile-nav-link">Produkte</a>
+            <a href="#vorteile" class="mobile-nav-link">Vorteile</a>
+            <button class="mobile-nav-link trigger-placeholder" data-modal-title="Partner werden">Partner</button>
+            <button class="btn btn-primary trigger-placeholder" data-modal-title="Händler finden" style="margin-top: 1rem;">
+                Händler finden
+            </button>
+        </nav>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header" id="header">
+        <div class="container header-container">
+            <a href="#" class="logo">SMARTFOX</a>
+            
+            <nav class="desktop-nav">
+                <ul class="desktop-nav-list">
+                    <li><a href="#produkte" class="desktop-nav-link">Produkte</a></li>
+                    <li><a href="#vorteile" class="desktop-nav-link">Vorteile</a></li>
+                    <li><button class="desktop-nav-link trigger-placeholder" data-modal-title="Partner werden">Partner</button></li>
+                </ul>
+                <button class="btn btn-primary trigger-placeholder" data-modal-title="Händler finden">
+                    Händler finden
+                </button>
+            </nav>
+
+            <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content reveal">
+                    <h1>Eigenverbrauch optimieren</h1>
+                    <p>Mit dem intelligenten SMARTFOX System.</p>
+                    <a href="#produkte" class="btn btn-primary">
+                        Produkte entdecken <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+                <div class="hero-visual reveal" style="--i:1">
+                    <div class="hero-image-wrapper">
+                        <div class="hero-abstract"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Prop Section -->
+        <section class="value-prop">
+            <div class="container value-prop-grid reveal">
+                <div class="value-prop-text">
+                    <h2>SMARTFOX optimiert den Eigenverbrauch Ihrer PV-Anlage bis zu <span class="highlight-red">98 %</span></h2>
+                    <p>Da die Einspeisevergütungen stetig sinken, wird es immer wichtiger, den produzierten Sonnenstrom selbst zu verbrauchen. Das intelligente Energiemanagementsystem von SMARTFOX leitet überschüssige Energie vollautomatisch an Verbraucher im Haus weiter und maximiert so Ihre Unabhängigkeit.</p>
+                </div>
+                <div class="value-prop-visual">
+                    <span class="massive-number">98<span class="percent">%</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="produkte" class="products">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>Unsere Produkte</h2>
+                </div>
+                <div class="product-grid">
+                    
+                    <!-- Product 1 -->
+                    <div class="product-card reveal" style="--i:0">
+                        <div class="product-image-wrapper">
+                            <span>PRO 3</span>
+                        </div>
+                        <div class="product-content">
+                            <h3>SMARTFOX Pro 3</h3>
+                            <p>Der intelligente Energiemanager für maximale Effizienz.</p>
+                            <button class="product-link trigger-placeholder" data-modal-title="SMARTFOX Pro 3">
+                                Details ansehen <i data-lucide="chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="product-card reveal" style="--i:1">
+                        <div class="product-image-wrapper">
+                            <span>PRO HEATER</span>
+                        </div>
+                        <div class="product-content">
+                            <h3>SMARTFOX Pro Heater</h3>
+                            <p>Stufenlose Warmwasserbereitung (3K | 4,5K | 6K).</p>
+                            <button class="product-link trigger-placeholder" data-modal-title="SMARTFOX Pro Heater">
+                                Details ansehen <i data-lucide="chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="product-card reveal" style="--i:2">
+                        <div class="product-image-wrapper">
+                            <span>PRO CHARGER 2</span>
+                        </div>
+                        <div class="product-content">
+                            <h3>SMARTFOX Pro Charger 2</h3>
+                            <p>Intelligentes Laden für Ihr Elektroauto.</p>
+                            <button class="product-link trigger-placeholder" data-modal-title="SMARTFOX Pro Charger 2">
+                                Details ansehen <i data-lucide="chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="product-card reveal" style="--i:3">
+                        <div class="product-image-wrapper">
+                            <span>PRO 2 LIGHT</span>
+                        </div>
+                        <div class="product-content">
+                            <h3>SMARTFOX Pro 2 Light</h3>
+                            <p>Der kompakte Energiemanager für Einsteiger.</p>
+                            <button class="product-link trigger-placeholder" data-modal-title="SMARTFOX Pro 2 Light">
+                                Details ansehen <i data-lucide="chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product 5 (Added based on feedback) -->
+                    <div class="product-card reveal" style="--i:4">
+                        <div class="product-image-wrapper">
+                            <span>NEXT GEN</span>
+                        </div>
+                        <div class="product-content">
+                            <h3>SMARTFOX The Next Generation</h3>
+                            <p>Die Zukunft des intelligenten Energiemanagements.</p>
+                            <button class="product-link trigger-placeholder" data-modal-title="SMARTFOX The Next Generation">
+                                Details ansehen <i data-lucide="chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="vorteile" class="features">
+            <div class="container">
+                
+                <div class="feature-row reveal">
+                    <div class="feature-content">
+                        <h3><span class="feature-number">1</span> Unabhängigkeit steigern</h3>
+                        <p>Werden Sie unabhängig von steigenden Strompreisen. Das System nutzt Ihre selbst produzierte Solarenergie genau dann, wenn sie zur Verfügung steht, und reduziert so den Zukauf aus dem Netz drastisch.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="fg-circle"></div>
+                    </div>
+                </div>
+
+                <div class="feature-row reveal">
+                    <div class="feature-content">
+                        <h3><span class="feature-number">2</span> Eigenverbrauch optimieren</h3>
+                        <p>Mit SMARTFOX erhöhen Sie den Eigenverbrauch Ihrer PV-Anlage auf bis zu 98%. Überschüssige Energie wird intelligent auf Warmwasser, E-Auto oder Wärmepumpe verteilt.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="fg-bars">
+                            <div class="fg-bar"></div>
+                            <div class="fg-bar"></div>
+                            <div class="fg-bar"></div>
+                            <div class="fg-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-row reveal">
+                    <div class="feature-content">
+                        <h3><span class="feature-number">3</span> SMARTFOX® Systemaufbau</h3>
+                        <p>Ein herstellerunabhängiges System, das sich nahtlos in bestehende und neue Anlagen integrieren lässt. Höchste Kompatibilität mit Wechselrichtern und Speichersystemen.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div style="width: 100px; height: 100px; border: 2px dashed var(--color-text-muted); border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="width: 40px; height: 40px; background: var(--color-accent); border-radius: 4px;"></div>
+                            <div style="position: absolute; width: 140%; height: 2px; background: var(--color-highlight); z-index: 0;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-row reveal">
+                    <div class="feature-content">
+                        <h3><span class="feature-number">4</span> Hochauflösendes Monitoring</h3>
+                        <p>Haben Sie auch unterwegs alles im Blick. Das kostenlose Webportal und die App bieten detaillierte Echtzeit-Analysen und Steuerungsmöglichkeiten für Ihr gesamtes Energiesystem.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div style="width: 160px; height: 100px; background: #111827; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;">
+                            <div style="height: 2px; width: 100%; background: rgba(255,255,255,0.1);"></div>
+                            <div style="height: 2px; width: 100%; background: rgba(255,255,255,0.1);"></div>
+                            <div style="height: 2px; width: 100%; background: rgba(255,255,255,0.1);"></div>
+                            <svg width="100%" height="40" viewBox="0 0 100 40" preserveAspectRatio="none" style="margin-top: -30px;">
+                                <path d="M0,40 L20,20 L40,30 L60,10 L80,25 L100,5" fill="none" stroke="var(--color-accent)" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-row reveal">
+                    <div class="feature-content">
+                        <h3><span class="feature-number">5</span> 100% Klimafreundlich</h3>
+                        <p>Optimieren Sie Ihre PV-Anlage und leisten Sie einen aktiven Beitrag zur Energiewende. Nutzen Sie sauberen Strom maximal effizient und reduzieren Sie Ihren CO2-Fußabdruck.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--color-highlight); position: relative; overflow: hidden;">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: var(--color-accent);"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo">SMARTFOX</span>
+                    <p>Intelligentes Energiemanagement für maximale Unabhängigkeit und Effizienz.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link trigger-placeholder" data-modal-title="Instagram" aria-label="Instagram">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="#" class="social-link trigger-placeholder" data-modal-title="Facebook" aria-label="Facebook">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="#" class="social-link trigger-placeholder" data-modal-title="LinkedIn" aria-label="LinkedIn">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Produkte</h4>
+                    <nav class="footer-links">
+                        <button class="trigger-placeholder" data-modal-title="SMARTFOX Pro 3">Pro 3 Energiemanager</button>
+                        <button class="trigger-placeholder" data-modal-title="SMARTFOX Pro Heater">Pro Heater</button>
+                        <button class="trigger-placeholder" data-modal-title="SMARTFOX Pro Charger 2">Pro Charger 2</button>
+                        <button class="trigger-placeholder" data-modal-title="SMARTFOX Pro 2 Light">Pro 2 Light</button>
+                        <button class="trigger-placeholder" data-modal-title="SMARTFOX The Next Generation">The Next Generation</button>
+                    </nav>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Unternehmen</h4>
+                    <nav class="footer-links">
+                        <a href="#vorteile">Vorteile</a>
+                        <button class="trigger-placeholder" data-modal-title="Partner werden">Partner werden</button>
+                        <button class="trigger-placeholder" data-modal-title="Händler finden">Händler finden</button>
+                        <button class="trigger-placeholder" data-modal-title="Karriere">Karriere</button>
+                    </nav>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Kontakt</h4>
+                    <div class="footer-links">
+                        <span class="footer-contact-item">
+                            <i data-lucide="map-pin"></i> Musterstraße 1, 12345 Stadt
+                        </span>
+                        <span class="footer-contact-item">
+                            <i data-lucide="phone"></i> +43 123 456 789
+                        </span>
+                        <span class="footer-contact-item">
+                            <i data-lucide="mail"></i> office@smartfox.demo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 SMARTFOX — All original content, images & trademarks are property of their respective owners. Website rebuilt by Benedict Jaros.</p>
+                <div style="display: flex; gap: var(--space-4);">
+                    <button class="trigger-legal">Impressum</button>
+                    <button class="trigger-legal">Datenschutz</button>
+                    <button class="trigger-legal">AGB</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Placeholder Modal -->
+    <div class="modal-overlay" id="placeholderModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+            <button class="modal-close" aria-label="Schließen" data-close-modal>
+                <i data-lucide="x"></i>
+            </button>
+            <h3 class="modal-title font-heading" id="modalTitle">Feature Name</h3>
+            <p class="modal-body">This feature will be live once the website is launched and configured. Contact us in the meantime — wir freuen uns auf Ihre Nachricht.</p>
+            <button class="btn btn-primary" data-close-modal>Verstanden</button>
+        </div>
+    </div>
+
+    <!-- Legal Demo Modal -->
+    <div class="modal-overlay" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+        <div class="modal-card">
+            <button class="modal-close" aria-label="Schließen" data-close-modal>
+                <i data-lucide="x"></i>
+            </button>
+            <h3 class="modal-title font-heading" id="legalModalTitle">Rechtliche Hinweise</h3>
+            <p class="modal-body">Diese Website ist ein Demo-Remake und wurde nicht von oder für das Unternehmen erstellt. Die Inhalte dienen ausschließlich Demonstrationszwecken. Für unsere eigenen rechtlichen Informationen:</p>
+            <div class="modal-links">
+                <a href="https://benedictjaros.com/impressum" target="_blank">Impressum <i data-lucide="external-link"></i></a>
+                <a href="https://benedictjaros.com/datenschutz" target="_blank">Datenschutz <i data-lucide="external-link"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner" id="cookieBanner" role="region" aria-label="Cookie Banner">
+        <p class="cookie-text">Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Sie können alle akzeptieren oder nur essenzielle Cookies zulassen.</p>
+        <div class="cookie-actions">
+            <button class="btn btn-outline btn-sm" id="cookieDecline" style="padding: 0.5rem 1rem;">Nur Essenzielle</button>
+            <button class="btn btn-primary btn-sm" id="cookieAccept" style="padding: 0.5rem 1rem;">Alle akzeptieren</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Icons
+            lucide.createIcons();
+
+            // Mobile Navigation
+            const navToggle = document.getElementById('navToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            function toggleMenu() {
+                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+                navToggle.setAttribute('aria-expanded', !isExpanded);
+                navToggle.setAttribute('aria-label', !isExpanded ? 'Menü schließen' : 'Menü öffnen');
+                
+                if (!isExpanded) {
+                    mobileOverlay.classList.add('is-open');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    mobileOverlay.classList.remove('is-open');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            navToggle.addEventListener('click', toggleMenu);
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navToggle.getAttribute('aria-expanded') === 'true') {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Close menu on Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+                    toggleMenu();
+                }
+            });
+
+            // Scroll Reveal
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealOptions = {
+                threshold: 0.12,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // Modals Logic
+            const placeholderModal = document.getElementById('placeholderModal');
+            const legalModal = document.getElementById('legalModal');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            function openModal(modal) {
+                modal.classList.add('is-active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModals() {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('is-active'));
+                document.body.style.overflow = '';
+            }
+
+            // Trigger Placeholder Modals
+            document.querySelectorAll('.trigger-placeholder').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const title = trigger.getAttribute('data-modal-title') || 'Feature';
+                    modalTitle.textContent = title;
+                    openModal(placeholderModal);
+                });
+            });
+
+            // Trigger Legal Modal
+            document.querySelectorAll('.trigger-legal').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(legalModal);
+                });
+            });
+
+            // Close Modals
+            document.querySelectorAll('[data-close-modal]').forEach(btn => {
+                btn.addEventListener('click', closeModals);
+            });
+
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeModals();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModals();
+            });
+
+            // Cookie Banner
+            const cookieBanner = document.getElementById('cookieBanner');
+            const btnAccept = document.getElementById('cookieAccept');
+            const btnDecline = document.getElementById('cookieDecline');
+
+            if (!localStorage.getItem('cookie_consent')) {
+                setTimeout(() => {
+                    cookieBanner.classList.add('is-visible');
+                }, 1000);
+            }
+
+            function handleCookieChoice(choice) {
+                localStorage.setItem('cookie_consent', choice);
+                cookieBanner.classList.remove('is-visible');
+            }
+
+            btnAccept.addEventListener('click', () => handleCookieChoice('accepted'));
+            btnDecline.addEventListener('click', () => handleCookieChoice('declined'));
+        });
+    </script>
+</body>
+</html>
